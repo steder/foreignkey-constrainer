@@ -1,3 +1,4 @@
+import argparse
 from pprint import pprint
 
 from .db import metadata
@@ -11,7 +12,16 @@ def are_you_probably_foreign_key(column) -> bool:
     return False
 
 
-def main():
+def get_add_constraints_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--ignore-tables", nargs="+")
+    args = parser.parse_args()
+    return args
+
+
+def add_constraints():
+    args = get_add_constraints_arguments()
+
     table_names = []
     # names of columns that maybe should be foreign keys:
     possible_foreign_keys = []
@@ -71,6 +81,10 @@ def main():
     with open("fokeys.sql", "w") as sqlfile:
         sqlfile.write("BEGIN;\n")
         for column, src, target in automatic_keys:
+            if target in args.ignore_tables:
+                print("Skipping table {}".format(table))
+                continue
+
             print(src.name + "." + column.name + " -> " + target)
             sql = auto_foreign_key_sql.format(**{
                 "table": column.table.name,
