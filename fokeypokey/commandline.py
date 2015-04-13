@@ -58,7 +58,10 @@ def main():
 
     # Add the constraint initially with "NOT VALID"...
     auto_foreign_key_sql = """
-    ALTER TABLE {table} ADD {constraint_name} FOREIGN_KEY ({column_name}) REFERENCES {target_table} NOT VALID;
+    ALTER TABLE {table} ADD constraint {constraint_name}
+    FOREIGN KEY ({column_name})
+    REFERENCES {target_table}
+    NOT VALID;
     """.strip()
     # Then make the constraint valid by doing any necessary
     # data cleanup and running:
